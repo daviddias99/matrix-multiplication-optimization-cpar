@@ -11,121 +11,140 @@ using namespace std;
 
 #define SYSTEMTIME clock_t
 
-void OnMult(int m_ar, int m_br) {
+double simpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
   SYSTEMTIME Time1, Time2;
-
-  char st[100];
   double temp;
-  int i, j, k;
-
-  double *pha, *phb, *phc;
-
-  pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
-  phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
-  phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
-
-  for (i = 0; i < m_ar; i++)
-    for (j = 0; j < m_ar; j++) pha[i * m_ar + j] = (double)1.0;
-
-  for (i = 0; i < m_br; i++)
-    for (j = 0; j < m_br; j++) phb[i * m_br + j] = (double)(i + 1);
-
   Time1 = clock();
 
-  for (i = 0; i < m_ar; i++) {
-    for (j = 0; j < m_br; j++) {
+  for (int i = 0; i < matrixSize; i++) {
+    for (int j = 0; j < matrixSize; j++) {
       temp = 0;
-      for (k = 0; k < m_ar; k++) {
-        temp += pha[i * m_ar + k] * phb[k * m_br + j];
+      for (int k = 0; k < matrixSize; k++) {
+        temp += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
       }
-      phc[i * m_ar + j] = temp;
+      resMatrix[i * matrixSize + j] = temp;
     }
   }
 
   Time2 = clock();
-  sprintf(st, "Time: %3.3f seconds\n",
-          (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-  cout << st;
 
-  cout << "Result matrix: " << endl;
-  for (i = 0; i < 1; i++) {
-    for (j = 0; j < min(10, m_br); j++) cout << phc[j] << " ";
-  }
-  cout << endl;
-
-  free(pha);
-  free(phb);
-  free(phc);
+  return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
 }
 
-void OnMultLine(int m_ar, int m_br) {}
+double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
+  SYSTEMTIME Time1, Time2;
+  double temp;
+  Time1 = clock();
 
-void handle_error(int retval) {
+  for (int i = 0; i < matrixSize; i++) {
+    for (int k = 0; k < matrixSize; k++) {
+      temp = 0;
+      for (int j = 0; j < matrixSize; j++) {
+        temp += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+      }
+      resMatrix[i * matrixSize + k] = temp;
+    }
+  }
+
+  Time2 = clock();
+
+  return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
+}
+
+void handleError(int retval) {
   printf("PAPI error %d: %s\n", retval, PAPI_strerror(retval));
   exit(1);
 }
 
-void init_papi() {
-  int retval = PAPI_library_init(PAPI_VER_CURRENT);
-  if (retval != PAPI_VER_CURRENT && retval < 0) {
-    printf("PAPI library version mismatch!\n");
-    exit(1);
-  }
-  if (retval < 0) handle_error(retval);
-
-  cout << "PAPI Version Number: MAJOR: " << PAPI_VERSION_MAJOR(retval)
-            << " MINOR: " << PAPI_VERSION_MINOR(retval)
-            << " REVISION: " << PAPI_VERSION_REVISION(retval) << "\n";
-}
-
-int main(int argc, char *argv[]) {
-  char c;
-  int lin, col, nt = 1;
-  int op = 1;
-
-  int EventSet = PAPI_NULL;
-  long long values[2];
+void initPapi(int &eventSet) {
   int ret;
 
   ret = PAPI_library_init(PAPI_VER_CURRENT);
-  if (ret != PAPI_VER_CURRENT) cout << "FAIL" << endl;
+  if (ret != PAPI_VER_CURRENT) handleError(ret);
 
-  ret = PAPI_create_eventset(&EventSet);
-  if (ret != PAPI_OK) cout << "ERRO: create eventset" << endl;
+  ret = PAPI_create_eventset(&eventSet);
+  if (ret != PAPI_OK) handleError(ret);
 
-  ret = PAPI_add_event(EventSet, PAPI_L1_DCM);
-  if (ret != PAPI_OK) cout << "ERRO: PAPI_L1_DCM" << endl;
+  ret = PAPI_add_event(eventSet, PAPI_L1_DCM);
+  if (ret != PAPI_OK) handleError(ret);
 
-  ret = PAPI_add_event(EventSet, PAPI_L2_DCM);
-  if (ret != PAPI_OK) cout << "ERRO: PAPI_L2_DCM" << endl;
+  ret = PAPI_add_event(eventSet, PAPI_L2_DCM);
+  if (ret != PAPI_OK) handleError(ret);
+}
 
-  // Start counting
-  ret = PAPI_start(EventSet);
-  if (ret != PAPI_OK) cout << "ERRO: Start PAPI" << endl;
+void closePapi(int &eventSet) {
+  int ret;
 
-  switch (op) {
-    case 1:
-      OnMult(lin, col);
-      break;
-    case 2:
-      OnMultLine(lin, col);
-      break;
+  ret = PAPI_remove_event(eventSet, PAPI_L1_DCM);
+  if (ret != PAPI_OK) handleError(ret);
+
+  ret = PAPI_remove_event(eventSet, PAPI_L2_DCM);
+  if (ret != PAPI_OK) handleError(ret);
+
+  ret = PAPI_destroy_eventset(&eventSet);
+  if (ret != PAPI_OK) handleError(ret);
+}
+
+/* Usage: matrixprod <operation> <square matrix size> [runs]*/
+int main(int argc, char *argv[]) {
+  if (argc < 3) {
+    cerr << "ERROR: insufficient number of arguments (operation, square matrix size, runs)" << endl;
+    return -1;
   }
 
-  ret = PAPI_stop(EventSet, values);
-  if (ret != PAPI_OK) cout << "ERRO: Stop PAPI" << endl;
-  printf("L1 DCM: %lld \n", values[0]);
-  printf("L2 DCM: %lld \n", values[1]);
+  // Get arguments
+  int op = atoi(argv[1]);
+  int matrixSize = atoi(argv[2]);
+  int runs = argc == 4 ? atoi(argv[3]) : 1;
 
-  ret = PAPI_reset(EventSet);
-  if (ret != PAPI_OK) cout << "FAIL reset" << endl;
+  // init matrices
+  double * op1Matrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
+  double * op2Matrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
+  double * resMatrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
 
-  ret = PAPI_remove_event(EventSet, PAPI_L1_DCM);
-  if (ret != PAPI_OK) cout << "FAIL remove event" << endl;
+  for (int i = 0; i < matrixSize; i++){
+    for (int j = 0; j < matrixSize; j++){
+      op1Matrix[i * matrixSize + j] = (double)1.0;
+      op2Matrix[i * matrixSize + j] = (double)(i + 1);
+    }
+  }
 
-  ret = PAPI_remove_event(EventSet, PAPI_L2_DCM);
-  if (ret != PAPI_OK) cout << "FAIL remove event" << endl;
+  // Init PAPI
+  int EventSet = PAPI_NULL;
+  long long values[2];
 
-  ret = PAPI_destroy_eventset(&EventSet);
-  if (ret != PAPI_OK) cout << "FAIL destroy" << endl;
+  initPapi(EventSet);
+
+  for(int i = 0; i < runs; i++) {
+
+    // Start counting
+    int ret = PAPI_start(EventSet);
+    double algorithmTime;
+    if (ret != PAPI_OK) handleError(ret);
+
+    switch (op) {
+      case 1:
+        algorithmTime = simpleCycle(op1Matrix, op2Matrix, resMatrix, matrixSize);
+        break;
+      case 2:
+        algorithmTime = optimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize);
+        break;
+    }
+
+    ret = PAPI_stop(EventSet, values);
+    if (ret != PAPI_OK) handleError(ret);
+
+    long long l1DataCacheMisses = values[0];
+    long long l2DataCacheMisses = values[1];
+
+    cout << algorithmTime << ',' << l1DataCacheMisses << ',' << l2DataCacheMisses << endl;
+
+    ret = PAPI_reset(EventSet);
+    if (ret != PAPI_OK) handleError(ret);
+  }
+
+  free(op1Matrix);
+  free(op2Matrix);
+  free(resMatrix);
+  closePapi(EventSet);
 }
