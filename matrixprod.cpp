@@ -90,7 +90,7 @@ void init_papi() {
 int main(int argc, char *argv[]) {
   char c;
   int lin, col, nt = 1;
-  int op;
+  int op = 1;
 
   int EventSet = PAPI_NULL;
   long long values[2];
@@ -108,39 +108,26 @@ int main(int argc, char *argv[]) {
   ret = PAPI_add_event(EventSet, PAPI_L2_DCM);
   if (ret != PAPI_OK) cout << "ERRO: PAPI_L2_DCM" << endl;
 
-  op = 1;
-  do {
-    cout << endl << "1. Multiplication" << endl;
-    cout << "2. Line Multiplication" << endl;
-    cout << "Selection?: ";
-    cin >> op;
-    if (op == 0) break;
-    printf("Dimensions: lins cols ? ");
-    cin >> lin >> col;
+  // Start counting
+  ret = PAPI_start(EventSet);
+  if (ret != PAPI_OK) cout << "ERRO: Start PAPI" << endl;
 
-    // Start counting
-    ret = PAPI_start(EventSet);
-    if (ret != PAPI_OK) cout << "ERRO: Start PAPI" << endl;
+  switch (op) {
+    case 1:
+      OnMult(lin, col);
+      break;
+    case 2:
+      OnMultLine(lin, col);
+      break;
+  }
 
-    switch (op) {
-      case 1:
-        OnMult(lin, col);
-        break;
-      case 2:
-        OnMultLine(lin, col);
+  ret = PAPI_stop(EventSet, values);
+  if (ret != PAPI_OK) cout << "ERRO: Stop PAPI" << endl;
+  printf("L1 DCM: %lld \n", values[0]);
+  printf("L2 DCM: %lld \n", values[1]);
 
-        break;
-    }
-
-    ret = PAPI_stop(EventSet, values);
-    if (ret != PAPI_OK) cout << "ERRO: Stop PAPI" << endl;
-    printf("L1 DCM: %lld \n", values[0]);
-    printf("L2 DCM: %lld \n", values[1]);
-
-    ret = PAPI_reset(EventSet);
-    if (ret != PAPI_OK) cout << "FAIL reset" << endl;
-
-  } while (op != 0);
+  ret = PAPI_reset(EventSet);
+  if (ret != PAPI_OK) cout << "FAIL reset" << endl;
 
   ret = PAPI_remove_event(EventSet, PAPI_L1_DCM);
   if (ret != PAPI_OK) cout << "FAIL remove event" << endl;
