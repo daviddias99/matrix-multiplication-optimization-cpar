@@ -52,7 +52,7 @@ double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int m
 }
 
 void handleError(int retval) {
-  printf("PAPI error %d: %s\n", retval, PAPI_strerror(retval));
+  fprintf(stderr, "PAPI error %d: %s\n", retval, PAPI_strerror(retval));
   exit(1);
 }
 
