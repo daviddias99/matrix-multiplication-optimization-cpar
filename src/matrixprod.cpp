@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
@@ -33,22 +34,23 @@ double simpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int 
 
 double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
   SYSTEMTIME Time1, Time2;
-  double temp;
   Time1 = clock();
 
   for (int i = 0; i < matrixSize; i++) {
     for (int k = 0; k < matrixSize; k++) {
-      temp = 0;
       for (int j = 0; j < matrixSize; j++) {
-        temp += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+        resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
       }
-      resMatrix[i * matrixSize + k] = temp;
     }
   }
 
   Time2 = clock();
 
   return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
+}
+
+double blockCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize, int blockSize) {
+  return 0;
 }
 
 void handleError(int retval) {
@@ -102,6 +104,8 @@ int main(int argc, char *argv[]) {
   double * op2Matrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
   double * resMatrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
 
+  memset(resMatrix, 0, matrixSize * matrixSize * sizeof(double));
+
   for (int i = 0; i < matrixSize; i++){
     for (int j = 0; j < matrixSize; j++){
       op1Matrix[i * matrixSize + j] = (double)1.0;
@@ -130,6 +134,8 @@ int main(int argc, char *argv[]) {
         algorithmTime = optimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize);
         break;
     }
+
+    memset(resMatrix, 0, matrixSize * matrixSize * sizeof(double));
 
     ret = PAPI_stop(EventSet, values);
     if (ret != PAPI_OK) handleError(ret);

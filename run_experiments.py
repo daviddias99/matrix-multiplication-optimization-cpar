@@ -15,7 +15,7 @@ cpp_out = os.path.join(out_path, 'matrixprod_cpp')
 process = subprocess.run(['g++', '-O2', cpp_src, '-o', cpp_out, '-lpapi'])
 
 
-process = subprocess.run([cpp_out, '1', '100', '3'],
+process = subprocess.run([cpp_out, '1', '100', '15'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             universal_newlines=True)
