@@ -60,15 +60,6 @@ void OnMult(int m_ar, int m_br) {
 
 void OnMultLine(int m_ar, int m_br) {}
 
-float produtoInterno(float *v1, float *v2, int col) {
-  int i;
-  float soma = 0.0;
-
-  for (i = 0; i < col; i++) soma += v1[i] * v2[i];
-
-  return (soma);
-}
-
 void handle_error(int retval) {
   printf("PAPI error %d: %s\n", retval, PAPI_strerror(retval));
   exit(1);
