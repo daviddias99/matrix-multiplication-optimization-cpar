@@ -49,8 +49,48 @@ double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int m
   return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
 }
 
-double blockCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize, int blockSize) {
-  return 0;
+double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
+                  int matrixSize, int blockSize) {
+
+  SYSTEMTIME Time1, Time2;
+  Time1 = clock();
+  
+  for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
+    for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
+      for (int i = 0; i < matrixSize; i = i + 1)
+        for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) {
+          int r = 0;
+          for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) 
+            r = r + op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+          
+          resMatrix[i*matrixSize + j] = resMatrix[i*matrixSize + j] + r;
+        };
+
+  Time2 = clock();
+
+  return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
+}
+
+double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
+                  int matrixSize, int blockSize) {
+
+  SYSTEMTIME Time1, Time2;
+  Time1 = clock();
+  
+  for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
+    for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
+      for (int i = 0; i < matrixSize; i = i + 1)
+        for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) {
+          int r = 0;
+          for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) 
+            resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+          
+        };
+
+
+  Time2 = clock();
+
+  return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
 }
 
 void handleError(int retval) {
@@ -87,7 +127,7 @@ void closePapi(int &eventSet) {
   if (ret != PAPI_OK) handleError(ret);
 }
 
-/* Usage: matrixprod <operation> <square matrix size> [runs]*/
+/* Usage: matrixprod <operation> <square matrix size> <runs> [block size]*/
 int main(int argc, char *argv[]) {
   if (argc < 3) {
     cerr << "ERROR: insufficient number of arguments (operation, square matrix size, runs)" << endl;
@@ -97,12 +137,15 @@ int main(int argc, char *argv[]) {
   // Get arguments
   int op = atoi(argv[1]);
   int matrixSize = atoi(argv[2]);
-  int runs = argc == 4 ? atoi(argv[3]) : 1;
+  int runs = atoi(argv[3]);
+  int blockSize = argc == 5 ? atoi(argv[4]) : 1;
+
+  const int MATRIX_SIZE_BYTES = (matrixSize * matrixSize) * sizeof(double);
 
   // init matrices
-  double * op1Matrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
-  double * op2Matrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
-  double * resMatrix = (double *)malloc((matrixSize * matrixSize) * sizeof(double));
+  double * op1Matrix = (double *)malloc(MATRIX_SIZE_BYTES);
+  double * op2Matrix = (double *)malloc(MATRIX_SIZE_BYTES);
+  double * resMatrix = (double *)malloc(MATRIX_SIZE_BYTES);
 
   memset(resMatrix, 0, matrixSize * matrixSize * sizeof(double));
 
@@ -133,9 +176,15 @@ int main(int argc, char *argv[]) {
       case 2:
         algorithmTime = optimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize);
         break;
+      case 3:
+        algorithmTime = blockSimpleCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
+        break;
+      case 4:
+        algorithmTime = blockOptimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
+        break;
     }
 
-    memset(resMatrix, 0, matrixSize * matrixSize * sizeof(double));
+    memset(resMatrix, 0, MATRIX_SIZE_BYTES);
 
     ret = PAPI_stop(EventSet, values);
     if (ret != PAPI_OK) handleError(ret);
