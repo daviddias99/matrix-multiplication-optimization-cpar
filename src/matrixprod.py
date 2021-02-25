@@ -19,6 +19,56 @@ def mult_matrix_1(mat_size, mat_a, mat_b):
 
   return end - start, mat_c
 
+def mult_matrix_2(mat_size, mat_a, mat_b):
+  mat_c = []
+
+  start = time.process_time()
+
+  for i in range(mat_size):
+    for k in range(mat_size):
+      for j in range(mat_size):
+        mat_c[i*mat_size + j] += mat_a[i * mat_size + k] * mat_b[k * mat_size + j]
+
+  end = time.process_time()
+
+  return end - start, mat_c
+
+def mult_matrix_3(mat_size, mat_a, mat_b, block_size):
+  mat_c = []
+
+  start = time.process_time()
+
+  for jj in range(0, mat_size, block_size):
+    for kk in range(0, mat_size, block_size):
+      for i in range(mat_size):
+        for j in range(jj, min(jj + block_size, mat_size)):
+          temp = 0
+
+          for k in range(kk, min(kk + block_size, mat_size)):
+            temp += mat_a[i * mat_size + k] * mat_b[k * mat_size + j]
+
+          mat_c += [temp]
+
+  end = time.process_time()
+
+  return end - start, mat_c
+
+def mult_matrix_4(mat_size, mat_a, mat_b, block_size):
+  mat_c = []
+
+  start = time.process_time()
+
+  for jj in range(0, mat_size, block_size):
+    for kk in range(0, mat_size, block_size):
+      for i in range(mat_size):
+        for k in range(kk, min(kk + block_size, mat_size)):
+          for j in range(jj, min(jj + block_size, mat_size)):
+            mat_c[i*mat_size + j] += mat_a[i * mat_size + k] * mat_b[k * mat_size + j]
+
+  end = time.process_time()
+
+  return end - start, mat_c
+
 
 functions = [mult_matrix_1]
 

@@ -81,10 +81,9 @@ double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
     for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
       for (int i = 0; i < matrixSize; i = i + 1)
         for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) {
-          int r = 0;
           for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) 
             resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
-          
+
         };
 
 
