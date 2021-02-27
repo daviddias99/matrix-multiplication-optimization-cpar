@@ -8,6 +8,9 @@
 #include <iostream>
 #include <string.h>
 
+// TODO: verify the same time is being used for all programming languages
+// TODO: maybe change variable creations to the beggining of the functions
+
 using namespace std;
 
 #define SYSTEMTIME clock_t
@@ -58,6 +61,7 @@ double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
   for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
     for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
       for (int i = 0; i < matrixSize; i = i + 1)
+        // TODO: maybe using this min can be avoided as not to affect performance (also in other languages)
         for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) {
           temp = 0;
           for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) 
