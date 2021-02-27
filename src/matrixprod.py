@@ -1,7 +1,7 @@
 import sys
 import time
 
-def mult_matrix_1(mat_size, mat_a, mat_b):
+def mult_matrix_1(mat_size, mat_a, mat_b, _):
   mat_c = []
 
   start = time.process_time()
@@ -19,8 +19,8 @@ def mult_matrix_1(mat_size, mat_a, mat_b):
 
   return end - start, mat_c
 
-def mult_matrix_2(mat_size, mat_a, mat_b):
-  mat_c = []
+def mult_matrix_2(mat_size, mat_a, mat_b, _):
+  mat_c = [0]*(mat_size**2)
 
   start = time.process_time()
 
@@ -54,7 +54,7 @@ def mult_matrix_3(mat_size, mat_a, mat_b, block_size):
   return end - start, mat_c
 
 def mult_matrix_4(mat_size, mat_a, mat_b, block_size):
-  mat_c = []
+  mat_c = [0]*(mat_size**2)
 
   start = time.process_time()
 
@@ -70,29 +70,21 @@ def mult_matrix_4(mat_size, mat_a, mat_b, block_size):
   return end - start, mat_c
 
 
-functions = [mult_matrix_1]
+functions = [mult_matrix_1, mult_matrix_2, mult_matrix_3, mult_matrix_4]
 
 def main(args):
-  alg_idx = 0
-  mat_size = 0
-  n_runs = 1
 
-  if len(args) - 1 >= 2:
-    alg_idx = int(args[1]) - 1
-    mat_size = int(args[2])
-  if len(args) - 1 == 3:
-    n_runs = int(args[3])
-  else:
-    print('Invalid number of args', file=sys.stderr)
-    exit(-1)
+  alg_idx = int(args[1]) - 1
+  mat_size = int(args[2])
+  n_runs = int(args[3])
+  block_size = int(args[4]) if len(args) > 4 else mat_size
 
   mat_a = [1.0] * mat_size * mat_size
   mat_b = [i + 1.0 for i in range(mat_size) for j in range(mat_size)]
 
   for _ in range(n_runs):
     mult_matrix = functions[alg_idx]
-
-    elapsed_time, _ = mult_matrix(mat_size, mat_a, mat_b)
+    elapsed_time, _ = mult_matrix(mat_size, mat_a, mat_b, block_size)
 
     print(f'{elapsed_time}')
 
