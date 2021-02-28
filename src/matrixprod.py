@@ -74,9 +74,9 @@ functions = [mult_matrix_1, mult_matrix_2, mult_matrix_3, mult_matrix_4]
 
 def main(args):
 
-  alg_idx = int(args[1]) - 1
-  mat_size = int(args[2])
-  n_runs = int(args[3])
+  mat_size = int(args[1])
+  n_runs = int(args[2])
+  alg_idx = int(args[3]) - 1
   block_size = int(args[4]) if len(args) > 4 else mat_size
 
   mat_a = [1.0] * mat_size * mat_size

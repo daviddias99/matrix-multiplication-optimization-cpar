@@ -54,19 +54,19 @@ double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int m
 
 double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
-  double temp; 
+  double temp;
   SYSTEMTIME Time1, Time2;
   Time1 = clock();
-  
+
   for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
     for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
       for (int i = 0; i < matrixSize; i = i + 1)
         // TODO: maybe using this min can be avoided as not to affect performance (also in other languages)
         for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) {
           temp = 0;
-          for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) 
+          for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1)
             temp = temp + op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
-          
+
           resMatrix[i*matrixSize + j] = resMatrix[i*matrixSize + j] + temp;
         };
 
@@ -80,12 +80,12 @@ double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
 
   SYSTEMTIME Time1, Time2;
   Time1 = clock();
-  
+
   for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
     for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
       for (int i = 0; i < matrixSize; i = i + 1)
         for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) {
-          for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) 
+          for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1)
             resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
 
         };
@@ -133,14 +133,14 @@ void closePapi(int &eventSet) {
 /* Usage: matrixprod <operation> <square matrix size> <runs> [block size]*/
 int main(int argc, char *argv[]) {
   if (argc < 3) {
-    cerr << "ERROR: insufficient number of arguments (operation, square matrix size, runs)" << endl;
+    cerr << "ERROR: insufficient number of arguments (square matrix size, runs, operation)" << endl;
     return -1;
   }
 
   // Get arguments
-  int op = atoi(argv[1]);
-  int matrixSize = atoi(argv[2]);
-  int runs = atoi(argv[3]);
+  int matrixSize = atoi(argv[1]);
+  int runs = atoi(argv[2]);
+  int op = atoi(argv[3]);
   int blockSize = argc == 5 ? atoi(argv[4]) : matrixSize*matrixSize;
 
   const int MATRIX_SIZE_BYTES = (matrixSize * matrixSize) * sizeof(double);

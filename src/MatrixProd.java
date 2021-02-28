@@ -83,21 +83,22 @@ public class MatrixProd {
 
   public static void main(String[] args) {
     if (args.length < 3) {
-      System.err.println("ERROR: insufficient number of arguments (operation, square matrix size, runs)");
+      System.err.println("ERROR: insufficient number of arguments (square matrix size, runs, operation)");
       System.exit(-1);
     }
-  
+
     // Get arguments
-    int op = Integer.parseInt(args[0]);
-    int matrixSize = Integer.parseInt(args[1]);
-    int runs = Integer.parseInt(args[2]);
-    int blockSize = args.length == 5 ? Integer.parseInt(args[4]) : matrixSize*matrixSize;
-  
+
+    int matrixSize = Integer.parseInt(args[0]);
+    int runs = Integer.parseInt(args[1]);
+    int op = Integer.parseInt(args[2]);
+    int blockSize = args.length == 4 ? Integer.parseInt(args[3]) : matrixSize*matrixSize;
+
     // init matrices
     double [] op1Matrix = new double[matrixSize*matrixSize];
     double [] op2Matrix = new double[matrixSize*matrixSize];
     double [] resMatrix = new double[matrixSize*matrixSize];
-  
+
     for (int i = 0; i < matrixSize; i++){
       for (int j = 0; j < matrixSize; j++){
         op1Matrix[i * matrixSize + j] = 1.0;
@@ -105,12 +106,12 @@ public class MatrixProd {
         resMatrix[i * matrixSize + j] = (double)0;
       }
     }
-  
+
     for(int i = 0; i < runs; i++) {
-  
+
       // Start counting
       double algorithmTime = 0;
-  
+
       switch (op) {
         case 1:
           algorithmTime = simpleCycle(op1Matrix, op2Matrix, resMatrix, matrixSize);
@@ -129,8 +130,8 @@ public class MatrixProd {
       }
 
       System.out.println(algorithmTime);
-  
+
     }
-  
+
   }
 }
