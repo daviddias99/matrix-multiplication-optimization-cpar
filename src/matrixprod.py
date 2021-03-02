@@ -1,6 +1,10 @@
 import sys
 import time
-import numpy as np
+from pypapi import papi_high
+from pypapi import events as papi_events
+
+
+
 
 def mult_matrix_1(mat_size, mat_a, mat_b, _):
   mat_c = [0]*(mat_size**2)
@@ -80,13 +84,24 @@ def main(args):
   alg_idx = int(args[3]) - 1
   block_size = int(args[4]) if len(args) > 4 else mat_size
 
-  mat_a = [[1] * mat_size] * mat_size
-  mat_b = [[i + 1 for i in range(mat_size)] for j in range(mat_size)]
+
+  mat_a = [1.0] * mat_size * mat_size
+  mat_b = [i + 1.0 for i in range(mat_size) for _ in range(mat_size)]
+
 
   for _ in range(n_runs):
     mult_matrix = functions[alg_idx]
+
+    papi_high.start_counters([
+        papi_events.PAPI_L1_DCM,
+        papi_events.PAPI_L2_DCM
+    ])
+
     elapsed_time, _ = mult_matrix(mat_size, mat_a, mat_b, block_size)
-    print(f'{elapsed_time}')
+
+    dcms = papi_high.stop_counters()
+    print(','.join([str(el) for el in [elapsed_time] + dcms]))
+
 
 if __name__ == '__main__':
   main(sys.argv)

@@ -3,13 +3,16 @@ import os
 import subprocess
 import pandas as pd
 from datetime import datetime
+import json
 
 os.makedirs('out', exist_ok=True)
 os.makedirs('results', exist_ok=True)
 
-src_path = os.path.join(os.path.dirname(__file__), 'src')
-out_path = os.path.join(os.path.dirname(__file__), 'out')
-results_path = os.path.join(os.path.dirname(__file__), 'results')
+dir = os.path.dirname(__file__)
+src_path = os.path.join(dir, 'src')
+out_path = os.path.join(dir, 'out')
+results_path = os.path.join(dir, 'results')
+experiments_path = os.path.join(dir, 'experiments.json')
 
 cpp_path = {
     'src': os.path.join(src_path, 'matrixprod.cpp'),
@@ -47,14 +50,20 @@ def run(language, algorithm, size, n_runs):
 def parse_output(output, other_data):
     return [other_data + row.split(',') for row in output.split('\n') if row.strip() != '']
 
-def run_experiments(start, end, step, n_runs, algorithms, languages):
+def run_experiment(exp):
 
     results = []
 
-    for alg in algorithms:
-        for lang in languages:
-            for size in range(start, end+step, step):
-                output = run(lang, alg, size, n_runs)
+    for lang in exp['languages']:
+        print('\nRunning experiment for language {} ...'.format(lang))
+
+        for alg in exp['algorithms']:
+            print('\tAlgorithm {} ...'.format(alg))
+
+            for size in range(exp['start'], exp['end']+exp['step'], exp['step']):
+                print('\t\tMatrix size {} ...'.format(size))
+
+                output = run(lang, alg, size, exp['runs'])
                 parsed_output = parse_output(output, [lang, alg, size])
                 results += parsed_output
 
@@ -65,19 +74,17 @@ def run_experiments(start, end, step, n_runs, algorithms, languages):
 compile_cpp()
 compile_java()
 
-n_runs = 3
 
-exp_1_results = run_experiments(600, 3000, 400, n_runs, [1], ['cpp', 'py', 'java'])
-exp_1_results.to_csv(os.path.join(results_path, 'exp_1_{}.csv'.format(datetime.now())), index=False, header=True)
+with open(experiments_path) as f:
+    experiments = json.load(f)
 
-exp_2a_results = run_experiments(600, 3000, 400, n_runs, [2], ['cpp', 'py', 'java'])
-exp_2a_results.to_csv(os.path.join(results_path, 'exp_2a_{}.csv'.format(
-    datetime.now())), index=False, header=True)
+for exp in experiments:
+    print('Starting experiment {} ({} runs) ...'.format(exp['name'], exp['runs']))
 
-exp_2b_results = run_experiments(4096, 10240, 2048, n_runs, [2], ['cpp'])
-exp_2b_results.to_csv(os.path.join(results_path, 'exp_2b_{}.csv'.format(
-    datetime.now())), index=False, header=True)
+    res = run_experiment(exp)
 
-exp_3_results = run_experiments(4096, 10240, 2048, n_runs, [[4, 128], [4, 256], [4, 512]], ['cpp'])
-exp_3_results.to_csv(os.path.join(results_path, 'exp_3_{}.csv'.format(
-    datetime.now())), index=False, header=True)
+    res_path = os.path.join(results_path, 'exp_{}_{}.csv'.format(exp['name'], datetime.now()))
+    res.to_csv(res_path, index=False, header=True)
+
+    print('Exp. {} results saved in {} ...\n'.format(exp['name']))
+

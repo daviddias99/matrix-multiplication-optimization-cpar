@@ -188,12 +188,7 @@ int main(int argc, char *argv[]) {
         algorithmTime = blockOptimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
         break;
     }
-    
-    for (size_t i = 0; i < matrixSize*matrixSize; i++)
-    {
-      cout << resMatrix[i];
-    }
-    
+
 
     memset(resMatrix, 0, MATRIX_SIZE_BYTES);
 
