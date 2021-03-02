@@ -6,12 +6,12 @@ public class MatrixProd {
   private static double simpleCycle(double[] op1Matrix, double[] op2Matrix, double[] resMatrix, int matrixSize) {
 
     double temp;
+    int i,j,k;
     long time1 = System.currentTimeMillis();
-
-    for (int i = 0; i < matrixSize; i++) {
-      for (int j = 0; j < matrixSize; j++) {
+    for (i = 0; i < matrixSize; i++) {
+      for (j = 0; j < matrixSize; j++) {
         temp = 0;
-        for (int k = 0; k < matrixSize; k++) {
+        for (k = 0; k < matrixSize; k++) {
           temp += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
         }
         resMatrix[i * matrixSize + j] = temp;
@@ -25,11 +25,11 @@ public class MatrixProd {
 
   private static double optimCycle(double[] op1Matrix, double[] op2Matrix, double[] resMatrix, int matrixSize) {
 
+    int i, j, k;
     long time1 = System.currentTimeMillis();
-
-    for (int i = 0; i < matrixSize; i++) {
-      for (int k = 0; k < matrixSize; k++) {
-        for (int j = 0; j < matrixSize; j++) {
+    for (i = 0; i < matrixSize; i++) {
+      for (k = 0; k < matrixSize; k++) {
+        for (j = 0; j < matrixSize; j++) {
           resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
         }
       }
@@ -44,19 +44,20 @@ public class MatrixProd {
       int blockSize) {
 
     double temp;
+    int jj, kk, i, j, k;
     long time1 = System.currentTimeMillis();
 
-    for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
-      for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
-        for (int i = 0; i < matrixSize; i = i + 1)
-          for (int j = jj; j < Math.min(jj + blockSize, matrixSize); j = j + 1) {
+    for (jj = 0; jj < matrixSize; jj = jj + blockSize)
+      for (kk = 0; kk < matrixSize; kk = kk + blockSize)
+        for (i = 0; i < matrixSize; i = i + 1)
+          for (j = jj; j < jj + blockSize; j = j + 1) {
             temp = 0;
-            for (int k = kk; k < Math.min(kk + blockSize, matrixSize); k = k + 1)
+            for (k = kk; k < kk + blockSize; k = k + 1)
               temp = temp + op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
 
             resMatrix[i * matrixSize + j] = resMatrix[i * matrixSize + j] + temp;
           }
-    ;
+
     long time2 = System.currentTimeMillis();
 
     return (double) (time2 - time1) / MILLIS_PER_SECOND;
@@ -65,17 +66,18 @@ public class MatrixProd {
   private static double blockOptimCycle(double[] op1Matrix, double[] op2Matrix, double[] resMatrix, int matrixSize,
       int blockSize) {
 
+    int jj, kk, i, k, j;
     long time1 = System.currentTimeMillis();
 
-    for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
-      for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
-        for (int i = 0; i < matrixSize; i = i + 1)
-          for (int k = kk; k < Math.min(kk + blockSize, matrixSize); k = k + 1) {
-            for (int j = jj; j < Math.min(jj + blockSize, matrixSize); j = j + 1)
+    for (jj = 0; jj < matrixSize; jj = jj + blockSize)
+      for (kk = 0; kk < matrixSize; kk = kk + blockSize)
+        for (i = 0; i < matrixSize; i = i + 1)
+          for (k = kk; k < kk + blockSize; k = k + 1) {
+            for (j = jj; j < jj + blockSize; j = j + 1)
               resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
 
           }
-    ;
+
     long time2 = System.currentTimeMillis();
 
     return (double) (time2 - time1) / MILLIS_PER_SECOND;

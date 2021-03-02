@@ -18,12 +18,13 @@ using namespace std;
 double simpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
   SYSTEMTIME Time1, Time2;
   double temp;
+  int i, j, k;
   Time1 = clock();
 
-  for (int i = 0; i < matrixSize; i++) {
-    for (int j = 0; j < matrixSize; j++) {
+  for (i = 0; i < matrixSize; i++) {
+    for (j = 0; j < matrixSize; j++) {
       temp = 0;
-      for (int k = 0; k < matrixSize; k++) {
+      for (k = 0; k < matrixSize; k++) {
         temp += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
       }
       resMatrix[i * matrixSize + j] = temp;
@@ -37,11 +38,13 @@ double simpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int 
 
 double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
   SYSTEMTIME Time1, Time2;
+  int i, j, k;
+
   Time1 = clock();
 
-  for (int i = 0; i < matrixSize; i++) {
-    for (int k = 0; k < matrixSize; k++) {
-      for (int j = 0; j < matrixSize; j++) {
+  for (i = 0; i < matrixSize; i++) {
+    for (k = 0; k < matrixSize; k++) {
+      for (j = 0; j < matrixSize; j++) {
         resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
       }
     }
@@ -56,15 +59,15 @@ double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
   double temp;
   SYSTEMTIME Time1, Time2;
+  int jj, kk, i, j, k;
   Time1 = clock();
 
-  for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
-    for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
-      for (int i = 0; i < matrixSize; i = i + 1)
-        // TODO: maybe using this min can be avoided as not to affect performance (also in other languages)
-        for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1) {
+  for (jj = 0; jj < matrixSize; jj = jj + blockSize)
+    for (kk = 0; kk < matrixSize; kk = kk + blockSize)
+      for (i = 0; i < matrixSize; i = i + 1)
+        for (j = jj; j < jj + blockSize; j = j + 1) {
           temp = 0;
-          for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1)
+          for (k = kk; k < kk + blockSize; k = k + 1)
             temp = temp + op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
 
           resMatrix[i*matrixSize + j] = resMatrix[i*matrixSize + j] + temp;
@@ -79,17 +82,17 @@ double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
 
   SYSTEMTIME Time1, Time2;
+  int jj, kk, i, j, k;
   Time1 = clock();
 
-  for (int jj = 0; jj < matrixSize; jj = jj + blockSize)
-    for (int kk = 0; kk < matrixSize; kk = kk + blockSize)
-      for (int i = 0; i < matrixSize; i = i + 1)
-        for (int k = kk; k < min(kk + blockSize, matrixSize); k = k + 1) {
-          for (int j = jj; j < min(jj + blockSize, matrixSize); j = j + 1)
+  for (jj = 0; jj < matrixSize; jj = jj + blockSize)
+    for (kk = 0; kk < matrixSize; kk = kk + blockSize)
+      for (i = 0; i < matrixSize; i = i + 1)
+        for (k = kk; k < kk + blockSize; k = k + 1) {
+          for (j = jj; j < jj + blockSize; j = j + 1)
             resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
 
         };
-
 
   Time2 = clock();
 
@@ -186,6 +189,12 @@ int main(int argc, char *argv[]) {
         algorithmTime = blockOptimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
         break;
     }
+    
+    for (size_t i = 0; i < matrixSize*matrixSize; i++)
+    {
+      cout << resMatrix[i];
+    }
+    
 
     memset(resMatrix, 0, MATRIX_SIZE_BYTES);
 
