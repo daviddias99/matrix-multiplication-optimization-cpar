@@ -9,7 +9,6 @@
 #include <string.h>
 
 // TODO: verify the same time is being used for all programming languages
-// TODO: maybe change variable creations to the beggining of the functions
 
 using namespace std;
 
