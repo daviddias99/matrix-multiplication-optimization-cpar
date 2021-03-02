@@ -1,13 +1,13 @@
 
 public class MatrixProd {
 
-  private static final long MILLIS_PER_SECOND = 1000;
+  private static final long MILLIS_PER_SECOND = 1000000000;
 
   private static double simpleCycle(double[] op1Matrix, double[] op2Matrix, double[] resMatrix, int matrixSize) {
 
     double temp;
     int i,j,k;
-    long time1 = System.currentTimeMillis();
+    long time1 = System.nanoTime();
     for (i = 0; i < matrixSize; i++) {
       for (j = 0; j < matrixSize; j++) {
         temp = 0;
@@ -18,7 +18,7 @@ public class MatrixProd {
       }
     }
 
-    long time2 = System.currentTimeMillis();
+    long time2 = System.nanoTime();
 
     return (double) (time2 - time1) / MILLIS_PER_SECOND;
   }
@@ -26,7 +26,7 @@ public class MatrixProd {
   private static double optimCycle(double[] op1Matrix, double[] op2Matrix, double[] resMatrix, int matrixSize) {
 
     int i, j, k;
-    long time1 = System.currentTimeMillis();
+    long time1 = System.nanoTime();
     for (i = 0; i < matrixSize; i++) {
       for (k = 0; k < matrixSize; k++) {
         for (j = 0; j < matrixSize; j++) {
@@ -35,7 +35,7 @@ public class MatrixProd {
       }
     }
 
-    long time2 = System.currentTimeMillis();
+    long time2 = System.nanoTime();
 
     return (double) (time2 - time1) / MILLIS_PER_SECOND;
   }
@@ -45,7 +45,7 @@ public class MatrixProd {
 
     double temp;
     int jj, kk, i, j, k;
-    long time1 = System.currentTimeMillis();
+    long time1 = System.nanoTime();
 
     for (jj = 0; jj < matrixSize; jj = jj + blockSize)
       for (kk = 0; kk < matrixSize; kk = kk + blockSize)
@@ -58,7 +58,7 @@ public class MatrixProd {
             resMatrix[i * matrixSize + j] = resMatrix[i * matrixSize + j] + temp;
           }
 
-    long time2 = System.currentTimeMillis();
+    long time2 = System.nanoTime();
 
     return (double) (time2 - time1) / MILLIS_PER_SECOND;
   }
@@ -67,7 +67,7 @@ public class MatrixProd {
       int blockSize) {
 
     int jj, kk, i, k, j;
-    long time1 = System.currentTimeMillis();
+    long time1 = System.nanoTime();
 
     for (jj = 0; jj < matrixSize; jj = jj + blockSize)
       for (kk = 0; kk < matrixSize; kk = kk + blockSize)
@@ -78,7 +78,7 @@ public class MatrixProd {
 
           }
 
-    long time2 = System.currentTimeMillis();
+    long time2 = System.nanoTime();
 
     return (double) (time2 - time1) / MILLIS_PER_SECOND;
   }
