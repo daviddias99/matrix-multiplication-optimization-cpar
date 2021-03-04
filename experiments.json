@@ -1,21 +1,12 @@
 [
   {
-    "name": "1",
-    "languages": ["cpp", "java"],
-    "algorithms": [1],
-    "start": 600,
-    "end": 3000,
-    "step": 400,
-    "runs": 1
-  },
-  {
     "name": "2a",
     "languages": ["cpp", "java"],
     "algorithms": [2],
     "start": 600,
     "end": 3000,
     "step": 400,
-    "runs": 1
+    "runs": 3
   },
   {
     "name": "2b",
@@ -24,7 +15,7 @@
     "start": 4096,
     "end": 10240,
     "step": 2048,
-    "runs": 1
+    "runs": 3
   },
   {
     "name": "3",
@@ -33,6 +24,6 @@
     "start": 4096,
     "end": 10240,
     "step": 2048,
-    "runs": 1
+    "runs": 3
   }
 ]

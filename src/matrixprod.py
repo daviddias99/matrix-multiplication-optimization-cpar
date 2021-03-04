@@ -3,9 +3,6 @@ import time
 from pypapi import papi_high
 from pypapi import events as papi_events
 
-
-
-
 def mult_matrix_1(mat_size, mat_a, mat_b, _):
   mat_c = [0]*(mat_size**2)
 

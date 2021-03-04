@@ -86,5 +86,4 @@ for exp in experiments:
     res_path = os.path.join(results_path, 'exp_{}_{}.csv'.format(exp['name'], datetime.now()))
     res.to_csv(res_path, index=False, header=True)
 
-    print('Exp. {} results saved in {} ...\n'.format(exp['name']))
-
+    print('Exp. {} results saved in a file ...\n'.format(exp['name']))
