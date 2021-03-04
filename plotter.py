@@ -24,14 +24,18 @@ df = df_1.append([df_2a, df_2b, df_3])
 def gflops(mat_size): return 2 * (mat_size ** 3) * 1e-9
 
 df['Performance'] = gflops(df['Matrix Size']) / df['Time']
-df['L1 DCM/gflop'] = df['L1 DCM'] / gflops(df['Matrix Size'])
-df['L2 DCM/gflop'] = df['L2 DCM'] / gflops(df['Matrix Size'])
-df['L1 DCM/m size'] = df['L1 DCM'] / df['Matrix Size']
+df['L1 DCM/Gflop'] = df['L1 DCM'] / gflops(df['Matrix Size'])
+df['L2 DCM/Gflop'] = df['L2 DCM'] / gflops(df['Matrix Size'])
+df['L1 DCM/Matrix Size'] = df['L1 DCM'] / df['Matrix Size']
 
 
+time_std = df.groupby(['Language', 'Matrix Size', 'Algorithm'], as_index=False).std()['Time']
 
 data = df.groupby(['Language', 'Matrix Size', 'Algorithm'], as_index=False).mean()
+
+data['Time STD'] = time_std
 data.reset_index()
+
 
 def algorithm_to_label(alg):
     labels = ['Column', 'Row']
@@ -48,6 +52,14 @@ def language_to_label(lang):
     if lang == 'java':
         return 'Java'
 
+def metric_to_label(metric):
+    if metric == 'Time':
+        return 'Time (s)'
+    if metric == 'Performance':
+        return 'Performance (Gflop/s)'
+
+    return metric
+
 
 def plot_algorithm_comparison(dataframe, comp_column, save_path):
     cpp_df = dataframe[['Language', 'Matrix Size', comp_column, 'Algorithm']][dataframe['Language'] == 'cpp']
@@ -57,7 +69,7 @@ def plot_algorithm_comparison(dataframe, comp_column, save_path):
     ax = None
 
     for alg, color in zip(algs, colors):
-        ax = cpp_df[cpp_df['Algorithm'] == alg].plot(x='Matrix Size', y=comp_column, ax=ax, label=algorithm_to_label(alg), kind='scatter', color=color)
+        ax = cpp_df[cpp_df['Algorithm'] == alg].plot(x='Matrix Size', y=comp_column, ax=ax, label=algorithm_to_label(alg), kind='scatter', color=color, ylabel=metric_to_label(comp_column))
 
     plt.savefig(save_path)
 
@@ -73,16 +85,15 @@ def plot_lang_comparison(dataframe, comp_column, alg, save_path):
     for lang, color in zip(langs, colors):
 
         ax = alg_df[alg_df['Language'] == lang].plot(
-            x='Matrix Size', y=comp_column, ax=ax, label=language_to_label(lang), kind='scatter', color=color)
+            x='Matrix Size', y=comp_column, ax=ax, label=language_to_label(lang), kind='scatter', color=color, ylabel=metric_to_label(comp_column))
 
     plt.savefig(save_path)
 
 
 plot_algorithm_comparison(data, 'Time', path.join(plots_dir, 'alg_comparison_time_c++.png'))
 plot_algorithm_comparison(data, 'Performance', path.join(plots_dir, 'alg_comparison_perf_c++.png'))
-plot_algorithm_comparison(data, 'L1 DCM/gflop', path.join(plots_dir, 'alg_comparison_l1dcm-gflop_c++.png'))
-plot_algorithm_comparison(data, 'L2 DCM/gflop', path.join(plots_dir, 'alg_comparison_l2dcm-gflop_c++.png'))
-plot_algorithm_comparison(data, 'L1 DCM/m size', path.join(plots_dir, 'alg_comparison_l1dcm-msize_c++.png'))
+plot_algorithm_comparison(data, 'L1 DCM/Gflop', path.join(plots_dir, 'alg_comparison_l1dcm-gflop_c++.png'))
+plot_algorithm_comparison(data, 'L2 DCM/Gflop', path.join(plots_dir, 'alg_comparison_l2dcm-gflop_c++.png'))
 plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++.png'))
 plot_algorithm_comparison(data, 'L2 DCM', path.join(plots_dir, 'alg_comparison_l2dcm_c++.png'))
 plot_lang_comparison(data, 'Time', 1, path.join(plots_dir, 'alg_1_time'))
