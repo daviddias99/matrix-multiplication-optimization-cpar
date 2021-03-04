@@ -25,6 +25,10 @@ def gflops(mat_size): return 2 * (mat_size ** 3) * 1e-9
 
 df['Performance'] = gflops(df['Matrix Size']) / df['Time']
 df['L1 DCM/gflop'] = df['L1 DCM'] / gflops(df['Matrix Size'])
+df['L2 DCM/gflop'] = df['L2 DCM'] / gflops(df['Matrix Size'])
+df['L1 DCM/m size'] = df['L1 DCM'] / df['Matrix Size']
+
+
 
 data = df.groupby(['Language', 'Matrix Size', 'Algorithm'], as_index=False).mean()
 data.reset_index()
@@ -77,6 +81,10 @@ def plot_lang_comparison(dataframe, comp_column, alg, save_path):
 plot_algorithm_comparison(data, 'Time', path.join(plots_dir, 'alg_comparison_time_c++.png'))
 plot_algorithm_comparison(data, 'Performance', path.join(plots_dir, 'alg_comparison_perf_c++.png'))
 plot_algorithm_comparison(data, 'L1 DCM/gflop', path.join(plots_dir, 'alg_comparison_l1dcm-gflop_c++.png'))
+plot_algorithm_comparison(data, 'L2 DCM/gflop', path.join(plots_dir, 'alg_comparison_l2dcm-gflop_c++.png'))
+plot_algorithm_comparison(data, 'L1 DCM/m size', path.join(plots_dir, 'alg_comparison_l1dcm-msize_c++.png'))
+plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++.png'))
+plot_algorithm_comparison(data, 'L2 DCM', path.join(plots_dir, 'alg_comparison_l2dcm_c++.png'))
 plot_lang_comparison(data, 'Time', 1, path.join(plots_dir, 'alg_1_time'))
 plot_lang_comparison(data, 'Time', 2, path.join(plots_dir, 'alg_2_time'))
 plot_lang_comparison(data, 'Performance', 1, path.join(plots_dir, 'alg_1_perf'))
