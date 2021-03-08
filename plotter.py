@@ -61,8 +61,11 @@ def metric_to_label(metric):
     return metric
 
 
-def plot_algorithm_comparison(dataframe, comp_column, save_path):
+def plot_algorithm_comparison(dataframe, comp_column, save_path, m_size_min=None, m_size_max=None):
     cpp_df = dataframe[['Language', 'Matrix Size', comp_column, 'Algorithm']][dataframe['Language'] == 'cpp']
+
+    if m_size_min and m_size_max:
+        cpp_df = cpp_df[cpp_df['Matrix Size'].between(m_size_min, m_size_max, inclusive=True)]
 
     algs = set(cpp_df['Algorithm'])
     colors = ['blue', 'red', 'green', 'orange', 'purple']
@@ -74,9 +77,12 @@ def plot_algorithm_comparison(dataframe, comp_column, save_path):
     plt.savefig(save_path)
 
 
-def plot_lang_comparison(dataframe, comp_column, alg, save_path):
+def plot_lang_comparison(dataframe, comp_column, alg, save_path, m_size_min=None, m_size_max=None):
     alg_df = dataframe[['Language', 'Matrix Size',
                         comp_column, 'Algorithm']][dataframe['Algorithm'] == alg]
+
+    if m_size_min and m_size_max:
+        alg_df = alg_df[alg_df['Matrix Size'].between(m_size_min, m_size_max, inclusive=True)]
 
     langs = set(alg_df['Language'])
     colors = ['blue', 'red', 'green', 'orange', 'purple']
@@ -90,15 +96,46 @@ def plot_lang_comparison(dataframe, comp_column, alg, save_path):
     plt.savefig(save_path)
 
 
-plot_algorithm_comparison(data, 'Time', path.join(plots_dir, 'alg_comparison_time_c++.png'))
-plot_algorithm_comparison(data, 'Performance', path.join(plots_dir, 'alg_comparison_perf_c++.png'))
-plot_algorithm_comparison(data, 'L1 DCM/Gflop', path.join(plots_dir, 'alg_comparison_l1dcm-gflop_c++.png'))
-plot_algorithm_comparison(data, 'L2 DCM/Gflop', path.join(plots_dir, 'alg_comparison_l2dcm-gflop_c++.png'))
-plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++.png'))
-plot_algorithm_comparison(data, 'L2 DCM', path.join(plots_dir, 'alg_comparison_l2dcm_c++.png'))
 plot_lang_comparison(data, 'Time', 1, path.join(plots_dir, 'alg_1_time'))
 plot_lang_comparison(data, 'Time', 2, path.join(plots_dir, 'alg_2_time'))
 plot_lang_comparison(data, 'Performance', 1, path.join(plots_dir, 'alg_1_perf'))
 plot_lang_comparison(data, 'Performance', 2, path.join(plots_dir, 'alg_2_perf'))
 
 
+plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++.png'))
+plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++_400-3000.png'), m_size_min=400, m_size_max=3000)
+plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++_4000-11000.png'), m_size_min=4000, m_size_max=11000)
+
+plot_algorithm_comparison(data, 'L2 DCM', path.join(plots_dir, 'alg_comparison_l2dcm_c++.png'))
+plot_algorithm_comparison(data, 'L2 DCM', path.join(
+    plots_dir, 'alg_comparison_l2dcm_c++_400-3000.png'), m_size_min=400, m_size_max=3000)
+plot_algorithm_comparison(data, 'L2 DCM', path.join(
+    plots_dir, 'alg_comparison_l2dcm_c++_4000-11000.png'), m_size_min=4000, m_size_max=11000)
+
+
+plot_algorithm_comparison(data, 'L1 DCM/Gflop', path.join(plots_dir, 'alg_comparison_l1dcm-gflop_c++.png'))
+plot_algorithm_comparison(data, 'L1 DCM/Gflop', path.join(
+    plots_dir, 'alg_comparison_l1dcm-gflop_c++_400-3000.png'), m_size_min=400, m_size_max=3000)
+plot_algorithm_comparison(data, 'L1 DCM/Gflop', path.join(
+    plots_dir, 'alg_comparison_l1dcm-gflop_c++_4000-11000.png'), m_size_min=4000, m_size_max=11000)
+
+plot_algorithm_comparison(
+    data, 'L2 DCM/Gflop', path.join(plots_dir, 'alg_comparison_l2dcm-gflop_c++.png'))
+plot_algorithm_comparison(data, 'L2 DCM/Gflop', path.join(
+    plots_dir, 'alg_comparison_l2dcm-gflop_c++_400-3000.png'), m_size_min=400, m_size_max=3000)
+plot_algorithm_comparison(data, 'L2 DCM/Gflop', path.join(
+    plots_dir, 'alg_comparison_l2dcm-gflop_c++_4000-11000.png'), m_size_min=4000, m_size_max=11000)
+
+plot_algorithm_comparison(data, 'Time', path.join(
+    plots_dir, 'alg_comparison_time_c++.png'))
+plot_algorithm_comparison(data, 'Time', path.join(
+    plots_dir, 'alg_comparison_time_c++_400-3000.png'), m_size_min=400, m_size_max=3000)
+plot_algorithm_comparison(data, 'Time', path.join(
+    plots_dir, 'alg_comparison_time_c++_4000-11000.png'), m_size_min=4000, m_size_max=11000)
+
+plot_algorithm_comparison(data, 'Performance', path.join(
+    plots_dir, 'alg_comparison_perf_c++.png'))
+plot_algorithm_comparison(data, 'Performance', path.join(
+    plots_dir, 'alg_comparison_perf_c++_400-3000.png'), m_size_min=400, m_size_max=3000)
+plot_algorithm_comparison(data, 'Performance', path.join(
+    plots_dir, 'alg_comparison_perf_c++_4000-11000.png'), m_size_min=4000, m_size_max=11000)
