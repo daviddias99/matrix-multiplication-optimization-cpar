@@ -56,25 +56,25 @@ double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int m
 
 double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
-  double temp;
   SYSTEMTIME Time1, Time2;
-  int jj, kk, i, j, k;
   Time1 = clock();
 
-  for (jj = 0; jj < matrixSize; jj = jj + blockSize)
-    for (kk = 0; kk < matrixSize; kk = kk + blockSize)
-      for (i = 0; i < matrixSize; i = i + 1)
-        for (j = jj; j < jj + blockSize; j = j + 1) {
-          temp = 0;
-          for (k = kk; k < kk + blockSize; k = k + 1)
-            temp = temp + op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+  int ii, jj, kk, i, j, k;
 
-          resMatrix[i*matrixSize + j] = resMatrix[i*matrixSize + j] + temp;
-        };
+  for (ii = 0; ii < matrixSize; ii += blockSize)
+    for (jj = 0; jj < matrixSize; jj += blockSize)
+      for (kk = 0; kk < matrixSize; kk += blockSize)
+        for (i = ii; i < ii + blockSize; i++)
+          for (k = kk; k < kk + blockSize; k++)
+            for (j = jj; j < jj + blockSize; j++)
+              resMatrix[i * matrixSize + j] +=
+                  op1Matrix[i * matrixSize + k] *
+                  op2Matrix[k * matrixSize + j];
+
 
   Time2 = clock();
 
-  return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
+  return (double) (Time2 - Time1) / CLOCKS_PER_SEC;
 }
 
 double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
