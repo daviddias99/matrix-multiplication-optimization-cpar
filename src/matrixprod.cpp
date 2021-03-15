@@ -16,17 +16,15 @@ using namespace std;
 
 double simpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
   SYSTEMTIME Time1, Time2;
-  double temp;
-  int i, j, k;
+  int i, j, k, rowOffsetI;
   Time1 = clock();
 
   for (i = 0; i < matrixSize; i++) {
+    rowOffsetI = i * matrixSize;
     for (j = 0; j < matrixSize; j++) {
-      temp = 0;
       for (k = 0; k < matrixSize; k++) {
-        temp += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+        resMatrix[rowOffsetI + j] += op1Matrix[rowOffsetI + k] * op2Matrix[k * matrixSize + j];
       }
-      resMatrix[i * matrixSize + j] = temp;
     }
   }
 
@@ -37,14 +35,16 @@ double simpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int 
 
 double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int matrixSize) {
   SYSTEMTIME Time1, Time2;
-  int i, j, k;
+  int i, j, k, rowOffsetI, rowOffsetK;
 
   Time1 = clock();
 
   for (i = 0; i < matrixSize; i++) {
+    rowOffsetI = i * matrixSize;
     for (k = 0; k < matrixSize; k++) {
+      rowOffsetK = k * matrixSize;
       for (j = 0; j < matrixSize; j++) {
-        resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+        resMatrix[rowOffsetI + j] += op1Matrix[rowOffsetI + k] * op2Matrix[rowOffsetK + j];
       }
     }
   }
@@ -59,17 +59,19 @@ double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
   SYSTEMTIME Time1, Time2;
   Time1 = clock();
 
-  int ii, jj, kk, i, j, k;
+  int ii, jj, kk, i, j, k, rowOffsetI, rowOffsetK;
 
   for (ii = 0; ii < matrixSize; ii += blockSize)
     for (jj = 0; jj < matrixSize; jj += blockSize)
       for (kk = 0; kk < matrixSize; kk += blockSize)
         for (i = ii; i < ii + blockSize; i++)
+          rowOffsetI = i * matrixSize;
           for (k = kk; k < kk + blockSize; k++)
+            rowOffsetK = k * matrixSize;
             for (j = jj; j < jj + blockSize; j++)
-              resMatrix[i * matrixSize + j] +=
-                  op1Matrix[i * matrixSize + k] *
-                  op2Matrix[k * matrixSize + j];
+              resMatrix[rowOffsetI + j] +=
+                  op1Matrix[rowOffsetI + k] *
+                  op2Matrix[rowOffsetK + j];
 
 
   Time2 = clock();
@@ -81,15 +83,17 @@ double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
 
   SYSTEMTIME Time1, Time2;
-  int jj, kk, i, j, k;
+  int jj, kk, i, j, k, rowOffsetI, rowOffsetK;
   Time1 = clock();
 
   for (jj = 0; jj < matrixSize; jj = jj + blockSize)
     for (kk = 0; kk < matrixSize; kk = kk + blockSize)
       for (i = 0; i < matrixSize; i = i + 1)
+        rowOffsetI = i * matrixSize;
         for (k = kk; k < kk + blockSize; k = k + 1) {
+          rowOffsetK = k * matrixSize;
           for (j = jj; j < jj + blockSize; j = j + 1)
-            resMatrix[i * matrixSize + j] += op1Matrix[i * matrixSize + k] * op2Matrix[k * matrixSize + j];
+            resMatrix[rowOffsetI + j] += op1Matrix[rowOffsetI + k] * op2Matrix[rowOffsetK + j];
 
         };
 
@@ -152,7 +156,6 @@ int main(int argc, char *argv[]) {
   double * op2Matrix = (double *)malloc(MATRIX_SIZE_BYTES);
   double * resMatrix = (double *)malloc(MATRIX_SIZE_BYTES);
 
-  memset(resMatrix, 0, matrixSize * matrixSize * sizeof(double));
 
   for (int i = 0; i < matrixSize; i++){
     for (int j = 0; j < matrixSize; j++){
@@ -168,7 +171,7 @@ int main(int argc, char *argv[]) {
   initPapi(EventSet);
 
   for(int i = 0; i < runs; i++) {
-
+    memset(resMatrix, 0, matrixSize * matrixSize * sizeof(double));
     // Start counting
     int ret = PAPI_start(EventSet);
     double algorithmTime;
