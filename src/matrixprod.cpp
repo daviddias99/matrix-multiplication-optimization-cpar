@@ -64,15 +64,16 @@ double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
   for (ii = 0; ii < matrixSize; ii += blockSize)
     for (jj = 0; jj < matrixSize; jj += blockSize)
       for (kk = 0; kk < matrixSize; kk += blockSize)
-        for (i = ii; i < ii + blockSize; i++)
+        for (i = ii; i < ii + blockSize; i++){
           rowOffsetI = i * matrixSize;
-          for (k = kk; k < kk + blockSize; k++)
+          for (k = kk; k < kk + blockSize; k++){
             rowOffsetK = k * matrixSize;
             for (j = jj; j < jj + blockSize; j++)
               resMatrix[rowOffsetI + j] +=
                   op1Matrix[rowOffsetI + k] *
                   op2Matrix[rowOffsetK + j];
-
+          }
+        }
 
   Time2 = clock();
 
@@ -88,7 +89,7 @@ double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
 
   for (jj = 0; jj < matrixSize; jj = jj + blockSize)
     for (kk = 0; kk < matrixSize; kk = kk + blockSize)
-      for (i = 0; i < matrixSize; i = i + 1)
+      for (i = 0; i < matrixSize; i = i + 1){
         rowOffsetI = i * matrixSize;
         for (k = kk; k < kk + blockSize; k = k + 1) {
           rowOffsetK = k * matrixSize;
@@ -96,6 +97,7 @@ double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
             resMatrix[rowOffsetI + j] += op1Matrix[rowOffsetI + k] * op2Matrix[rowOffsetK + j];
 
         };
+      }
 
   Time2 = clock();
 
