@@ -22,7 +22,7 @@ python_path = os.path.join(src_path, 'matrixprod.py')
 java_path = os.path.join(src_path, 'MatrixProd.java')
 
 run_cmd = {
-    'cpp': [cpp_path['out']],
+    'cpp': ['taskset', '-c', '0', cpp_path['out']],
     'py': ['python', python_path],
     'java': ['java', '-cp', out_path, 'MatrixProd']
 }
