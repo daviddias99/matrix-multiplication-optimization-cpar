@@ -194,7 +194,6 @@ int main(int argc, char *argv[]) {
         break;
     }
 
-
     memset(resMatrix, 0, MATRIX_SIZE_BYTES);
 
     ret = PAPI_stop(EventSet, values);

@@ -9,10 +9,10 @@ plots_dir = path.join(dir, 'plots')
 results_dir = path.join(dir, 'results')
 os.makedirs(path.join(dir, 'plots'), exist_ok=True)
 
-exp_1 = 'exp_1_2021-03-03 09:03:20.271109.csv'
-exp_2a = 'exp_2a_2021-03-03 16:41:42.152823.csv'
-exp_2b = 'exp_2b_2021-03-03 18:15:05.165873.csv'
-exp_3 = 'exp_3_2021-03-03 21:57:52.261995.csv'
+exp_1 = 'exp_1_2021-03-15 19:16:26.210611.csv'
+exp_2a = 'exp_2a_2021-03-15 19:22:26.269138.csv'
+exp_2b = 'exp_2b_2021-03-15 20:52:59.217319.csv'
+exp_3 = 'exp_3_2021-03-16 00:33:23.159561.csv'
 
 df_1 = pd.read_csv(path.join(results_dir, exp_1))
 df_2a = pd.read_csv(path.join(results_dir, exp_2a))
