@@ -54,7 +54,7 @@ double optimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix, int m
   return (double)(Time2 - Time1) / CLOCKS_PER_SEC;
 }
 
-double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
+double blockCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
   SYSTEMTIME Time1, Time2;
   Time1 = clock();
@@ -80,7 +80,7 @@ double blockSimpleCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
   return (double) (Time2 - Time1) / CLOCKS_PER_SEC;
 }
 
-double blockOptimCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
+double blockBookCycle(double* op1Matrix, double* op2Matrix, double* resMatrix,
                   int matrixSize, int blockSize) {
 
   SYSTEMTIME Time1, Time2;
@@ -187,10 +187,10 @@ int main(int argc, char *argv[]) {
         algorithmTime = optimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize);
         break;
       case 3:
-        algorithmTime = blockSimpleCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
+        algorithmTime = blockCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
         break;
       case 4:
-        algorithmTime = blockOptimCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
+        algorithmTime = blockBookCycle(op1Matrix, op2Matrix, resMatrix, matrixSize, blockSize);
         break;
     }
 

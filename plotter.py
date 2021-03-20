@@ -12,7 +12,7 @@ os.makedirs(path.join(dir, 'plots'), exist_ok=True)
 exp_1 = 'exp_1_2021-03-15 19:16:26.210611.csv'
 exp_2a = 'exp_2a_2021-03-15 19:22:26.269138.csv'
 exp_2b = 'exp_2b_2021-03-15 20:52:59.217319.csv'
-exp_3 = 'exp_3_2021-03-16 00:33:23.159561.csv'
+exp_3 = 'exp_3_2021-03-19 19:57:56.211959.csv'
 
 df_1 = pd.read_csv(path.join(results_dir, exp_1))
 df_2a = pd.read_csv(path.join(results_dir, exp_2a))
@@ -68,7 +68,7 @@ def plot_algorithm_comparison(dataframe, comp_column, save_path, m_size_min=None
         cpp_df = cpp_df[cpp_df['Matrix Size'].between(m_size_min, m_size_max, inclusive=True)]
 
     algs = set(cpp_df['Algorithm'])
-    colors = ['blue', 'red', 'green', 'orange', 'purple']
+    colors = ['blue', 'red', 'green', 'orange', 'purple', 'yellow']
     ax = None
 
     for alg, color in zip(algs, colors):
@@ -85,7 +85,7 @@ def plot_lang_comparison(dataframe, comp_column, alg, save_path, m_size_min=None
         alg_df = alg_df[alg_df['Matrix Size'].between(m_size_min, m_size_max, inclusive=True)]
 
     langs = set(alg_df['Language'])
-    colors = ['blue', 'red', 'green', 'orange', 'purple']
+    colors = ['blue', 'red', 'green', 'orange', 'purple', 'yellow']
 
     ax = None
     for lang, color in zip(langs, colors):
