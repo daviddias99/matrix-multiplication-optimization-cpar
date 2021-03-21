@@ -86,6 +86,7 @@ def plot_lang_comparison(dataframe, comp_column, alg, save_path, m_size_min=None
 
     langs = set(alg_df['Language'])
     colors = ['blue', 'red', 'green', 'orange', 'purple', 'yellow']
+    marker = ['.', 'x']
 
     ax = None
     for lang, color in zip(langs, colors):
@@ -96,10 +97,14 @@ def plot_lang_comparison(dataframe, comp_column, alg, save_path, m_size_min=None
     plt.savefig(save_path)
 
 
-plot_lang_comparison(data, 'Time', 1, path.join(plots_dir, 'alg_1_time'))
-plot_lang_comparison(data, 'Time', 2, path.join(plots_dir, 'alg_2_time'))
-plot_lang_comparison(data, 'Performance', 1, path.join(plots_dir, 'alg_1_perf'))
-plot_lang_comparison(data, 'Performance', 2, path.join(plots_dir, 'alg_2_perf'))
+plot_lang_comparison(data, 'Time', 1, path.join(
+    plots_dir, 'alg_1_time'), m_size_min=400, m_size_max=3000)
+plot_lang_comparison(data, 'Time', 2, path.join(
+    plots_dir, 'alg_2_time'), m_size_min=400, m_size_max=3000)
+plot_lang_comparison(data, 'Performance', 1, path.join(
+    plots_dir, 'alg_1_perf'), m_size_min=400, m_size_max=3000)
+plot_lang_comparison(data, 'Performance', 2, path.join(
+    plots_dir, 'alg_2_perf'), m_size_min=400, m_size_max=3000)
 
 
 plot_algorithm_comparison(data, 'L1 DCM', path.join(plots_dir, 'alg_comparison_l1dcm_c++.png'))
