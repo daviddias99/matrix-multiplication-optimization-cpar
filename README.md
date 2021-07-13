@@ -2,7 +2,7 @@
 
 **2020/2021** - 4th Year, 2nd Semester
 
-**Course:** *Computação Paralela* ([CPAR](https://sigarra.up.pt/feup/en/UCURR_GERAL.FICHA_UC_VIEW?pv_ocorrencia_id=399883)) | Parallel Computing
+**Course:** *Computação Paralela* ([CPAR](https://sigarra.up.pt/feup/pt/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=350413)) | Parallel Computing
 
 **Authors:** David Silva ([daviddias99](https://github.com/daviddias99)), Luís Cunha ([luispcunha](https://github.com/luispcunha))
 
